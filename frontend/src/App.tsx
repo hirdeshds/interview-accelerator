@@ -785,6 +785,7 @@ function Interview({
   const [latestEval, setLatestEval] = useState<EvalResponse | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [speakerPlaying, setSpeakerPlaying] = useState(false);
+  const [micError, setMicError] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
 
   // Video Interview Stream & Controls
@@ -931,36 +932,78 @@ function Interview({
     }
   }, [started]);
 
-  const handleStartVoiceRecording = () => {
+  const handleStartVoiceRecording = async () => {
+    setMicError(null);
+
+    // If currently recording, stop
+    if (isRecording) {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch {}
+      }
+      setIsRecording(false);
+      return;
+    }
+
+    // Proactively verify / request microphone access from browser
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Release immediate test tracks so SpeechRecognition has full exclusive access
+        stream.getTracks().forEach(track => track.stop());
+      } catch (err: any) {
+        console.warn("Microphone access prompt error:", err);
+        if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+          setMicError("Microphone permission was blocked. Please click the permissions icon (lock/tune) in your browser address bar to allow Microphone, or type your answer directly.");
+          return;
+        } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
+          setMicError("No microphone hardware device found on this computer. You can type your response or use 'Quick Demo Response'.");
+          return;
+        }
+      }
+    }
+
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      setIsRecording(true);
+      setMicError("Web Speech API is not supported in this browser (Chrome and Edge recommended). You can type your answer or click 'Quick Demo Response'.");
       return;
     }
 
     try {
-      if (isRecording) {
-        recognitionRef.current?.stop();
-        setIsRecording(false);
-        return;
-      }
-
       const rec = new SpeechRecognition();
       rec.continuous = true;
       rec.interimResults = true;
       rec.lang = "en-US";
+
+      // Keep whatever text was already typed so we append to it
+      const existingText = candidateAnswer ? candidateAnswer.trim() + " " : "";
+
+      rec.onstart = () => {
+        setIsRecording(true);
+        setMicError(null);
+      };
 
       rec.onresult = (event: any) => {
         let transcript = "";
         for (let i = 0; i < event.results.length; i++) {
           transcript += event.results[i][0].transcript;
         }
-        setCandidateAnswer(transcript);
+        setCandidateAnswer(existingText + transcript);
       };
 
       rec.onerror = (e: any) => {
-        console.error("Speech recognition error", e);
-        setIsRecording(false);
+        console.error("Speech recognition error:", e.error);
+        if (e.error === "not-allowed") {
+          setMicError("Microphone permission denied. Please allow microphone access in your browser address bar.");
+          setIsRecording(false);
+        } else if (e.error === "network") {
+          setMicError("Speech recognition network error: unable to connect to speech transcription service. Please check internet connection or type answer.");
+          setIsRecording(false);
+        } else if (e.error === "no-speech") {
+          // Do not abruptly cancel on short silence
+        } else {
+          setMicError(`Speech recognition: ${e.error}`);
+          setIsRecording(false);
+        }
       };
 
       rec.onend = () => {
@@ -970,10 +1013,17 @@ function Interview({
       recognitionRef.current = rec;
       rec.start();
       setIsRecording(true);
-    } catch (err) {
-      console.error("Failed speech recognition", err);
-      setIsRecording(true);
+    } catch (err: any) {
+      console.error("Failed speech recognition start", err);
+      setMicError("Could not start speech recognition: " + (err.message || String(err)));
+      setIsRecording(false);
     }
+  };
+
+  const handleInsertSampleAnswer = () => {
+    setMicError(null);
+    const sample = `In my project, I built an end-to-end RAG question answering pipeline using FastAPI, Python, and Qdrant vector database. We chunked documents with sentence-transformers and evaluated retrieval latency, achieving 120ms average response time with a 22% improvement in precision over baseline.`;
+    setCandidateAnswer(sample);
   };
 
   const handleSpeakQuestion = () => {
@@ -1249,15 +1299,40 @@ function Interview({
             style={{ width: "100%", height: "90px", padding: "0.75rem", borderRadius: "8px", border: "1px solid #cbd5e1", resize: "vertical", fontSize: "0.95rem" }}
           />
 
-          <div style={{ display: "flex", gap: "0.75rem", width: "100%", marginTop: "0.5rem", alignItems: "center" }}>
-            <button className={`btn ${isRecording ? "btn-danger" : "btn-secondary"}`} onClick={handleStartVoiceRecording} type="button">
-              <Icon name={isRecording ? "stop" : "mic"} size={18} />
-              {isRecording ? "Stop Speech Input" : "Speak Answer (STT)"}
-            </button>
-            {isRecording && <Waveform active />}
-            <Button icon="send" onClick={handleSubmitAnswer} disabled={evaluating || !candidateAnswer.trim()}>
-              {evaluating ? "Evaluating Answer..." : "Submit Answer"}
-            </Button>
+          {micError && (
+            <div style={{ marginTop: '0.5rem', width: '100%', padding: '0.6rem 0.8rem', borderRadius: '8px', background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Icon name="alert" size={16} />
+                <span>{micError}</span>
+              </div>
+              <button className="text-button" onClick={handleInsertSampleAnswer} type="button" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', color: '#b91c1c' }}>
+                Insert Sample Speech &rarr;
+              </button>
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: "0.75rem", width: "100%", marginTop: "0.5rem", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+              <button className={`btn ${isRecording ? "btn-danger" : "btn-secondary"}`} onClick={handleStartVoiceRecording} type="button">
+                <Icon name={isRecording ? "stop" : "mic"} size={18} />
+                {isRecording ? "Stop Speech Input" : "Speak Answer (STT)"}
+              </button>
+              {isRecording && (
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <Waveform active />
+                  <span style={{ fontSize: "0.75rem", color: "#16a34a", fontWeight: 700 }}>Listening... Speak now</span>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              <button className="text-button" onClick={handleInsertSampleAnswer} type="button" style={{ fontSize: '0.8rem', color: '#2563eb' }}>
+                <Icon name="spark" size={14} /> Quick Demo Response
+              </button>
+              <Button icon="send" onClick={handleSubmitAnswer} disabled={evaluating || !candidateAnswer.trim()}>
+                {evaluating ? "Evaluating Answer..." : "Submit Answer"}
+              </Button>
+            </div>
           </div>
         </div>
 
