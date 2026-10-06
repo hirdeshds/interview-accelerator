@@ -140,7 +140,57 @@ npm install
 npm run dev
 ```
 The frontend application will start on `http://localhost:8443` (or the assigned Vite port).  
-All `/api/*` calls are automatically proxied to `http://127.0.0.1:8000`.
+All `/api/*` calls are automatically proxied to `http://127.0.0.1:8005`.
+
+---
+
+## ☁️ Deploying on Render (Frontend + Backend)
+
+You can deploy both services to **[Render](https://render.com)** using either the automated Blueprint or manual setup:
+
+### Method A: Automated Deployment via Blueprint (`render.yaml`) — *Recommended*
+1. Push your repository to GitHub.
+2. Go to [dashboard.render.com](https://dashboard.render.com) and click **New +** &rarr; **Blueprint**.
+3. Select your GitHub repository.
+4. Render will read `render.yaml` and configure:
+   - **`interview-accelerator-backend`** (Python Web Service)
+   - **`interview-accelerator-frontend`** (Static Site with SPA rewrite rules)
+   - Auto-link `VITE_API_URL` from the backend to the frontend.
+5. Click **Apply**. Both services will build and deploy automatically!
+
+---
+
+### Method B: Manual Deployment on Render
+
+#### 1. Deploy the Backend (FastAPI Web Service)
+1. Go to [dashboard.render.com](https://dashboard.render.com) &rarr; **New +** &rarr; **Web Service**.
+2. Connect your GitHub repository.
+3. Configure the settings:
+   - **Name**: `interview-accelerator-backend`
+   - **Root Directory**: `backend`
+   - **Environment**: `Python`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+   - **Plan**: Free
+4. *(Optional)* Add Environment Variable:
+   - `COHERE_API_KEY`: `<your_cohere_key>` (optional; fallback heuristics handle parsing if omitted).
+5. Click **Create Web Service**. Copy your backend URL (e.g., `https://interview-accelerator-backend.onrender.com`).
+
+#### 2. Deploy the Frontend (React Static Site)
+1. Go to [dashboard.render.com](https://dashboard.render.com) &rarr; **New +** &rarr; **Static Site**.
+2. Connect the same GitHub repository.
+3. Configure the settings:
+   - **Name**: `interview-accelerator-frontend`
+   - **Root Directory**: `frontend`
+   - **Build Command**: `npm install && npm run build`
+   - **Publish Directory**: `dist`
+4. Add Environment Variable:
+   - `VITE_API_URL`: Your backend URL from step 1 (e.g., `https://interview-accelerator-backend.onrender.com`).
+5. Under **Redirects/Rewrites**:
+   - **Source**: `/*`
+   - **Destination**: `/index.html`
+   - **Action**: `Rewrite`
+6. Click **Create Static Site**. Your application will be live at `https://interview-accelerator-frontend.onrender.com`!
 
 ---
 

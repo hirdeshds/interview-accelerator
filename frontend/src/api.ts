@@ -1,4 +1,8 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "";
+let RAW_BASE_URL = (import.meta.env.VITE_API_URL || "").trim().replace(/\/+$/, "");
+if (RAW_BASE_URL && !RAW_BASE_URL.startsWith("http://") && !RAW_BASE_URL.startsWith("https://")) {
+  RAW_BASE_URL = `https://${RAW_BASE_URL}`;
+}
+const BASE_URL = RAW_BASE_URL;
 const DIRECT_BACKEND_URL = "http://127.0.0.1:8005";
 
 export interface RoleAnalysis {
