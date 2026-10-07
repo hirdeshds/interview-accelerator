@@ -1,203 +1,317 @@
+<div align="center">
+
 # Student Credibility — AI Interview Accelerator
-> **AI Product Engineer Intern Challenge — Assignment 3**  
-> Built for [Student Credibility](https://studentcredibility.com) to solve the student candidate preparation problem through personalized AI role intelligence and adaptive multi-level interview simulations.
+### Enterprise-Grade Adaptive Role Intelligence & Multi-Level Interview Simulation Platform
+
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI_0.104+-009688.svg?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![React 19](https://img.shields.io/badge/Frontend-React_19_|_TypeScript-61DAFB.svg?style=flat-square&logo=react)](https://react.dev/)
+[![Cohere Command R+](https://img.shields.io/badge/AI_Engine-Cohere_Command_R+-39594C.svg?style=flat-square&logo=cohere)](https://cohere.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Production Ready](https://img.shields.io/badge/Deployment-Render_Cloud-46E3B7.svg?style=flat-square&logo=render)](https://render.com)
+
+</div>
 
 ---
 
-## 🌟 Overview & Problem Solved
+## Executive Summary
 
-A student applying for a job typically has a **Resume** and a **Job Description (JD)**, but faces 6 critical dilemmas:
-1. **What the employer is actually looking for** &rarr; *Solved via Step 1: AI Role Extraction (required vs preferred skills, competencies, keywords)*
-2. **How well their resume matches the role** &rarr; *Solved via Step 2: Fit Scoring, skill match breakdowns, and missing gaps*
-3. **What questions they are likely to face** &rarr; *Solved via Step 3: Personalized 3-Level Interview Generation based directly on resume claims*
-4. **How effectively they can answer those questions** &rarr; *Solved via Live Evaluation with STAR framework direction & actionable feedback*
-5. **What their preparation gaps are** &rarr; *Solved via Priority 1–3 Preparation Roadmap with specific study checklists*
-6. **Whether they are actually ready for the interview** &rarr; *Solved via Objective Interview Readiness Assessment (🔴 / 🟠 / 🟡 / 🟢)*
+The **AI Interview Accelerator** is a production-engineered talent readiness and interview simulation platform built for [Student Credibility](https://studentcredibility.com). It bridges the information asymmetry between aspiring candidates and enterprise hiring teams by translating unstructured Job Descriptions (JDs) and candidate resumes into objective job-fit metrics, multi-level adaptive interview simulations, and actionable readiness intelligence.
 
----
+### The 6 Core Candidate Dilemmas Solved
 
-## 🚀 Key Features
-
-### 1. Document Input & File Parsing
-- Paste Job Description & Candidate Resume or upload files (`.pdf`, `.docx`, `.txt`).
-- Automated text extraction using `pypdf`, `python-docx`, and UTF-8 decoders.
-- Quick **Load Sample JD & Resume** button for testing.
-
-### 2. Step 1 — Understand the Role
-- AI parses Job Description into:
-  - Role Title & Level
-  - Key Responsibilities
-  - Required Skills vs Preferred Skills
-  - Technical Competencies & Behavioural Competencies
-  - Experience Expectations
-  - Important Keywords & Concepts
-  - Key Qualifications
-
-### 3. Step 2 — Understand the Candidate & Job Fit
-- Evaluates candidate's background against the target role:
-  - Candidate Key Skills
-  - Relevant Experience, Projects, and Achievements
-  - Strengths Against JD
-  - Missing / Weak Skills
-  - Potential Resume Claims to Probe in Interview
-  - **Job Fit Score** with categorised matches:
-    - **Strong Match**
-    - **Partial Match**
-    - **Missing / Weak**
-
-### 4. Step 3 — Adaptive Multi-Level AI Interview Simulator
-- **Level 1 — Screening Interview**: Resume verification, project overview, motivation, and role alignment.
-- **Level 2 — Competency Interview**: In-depth technical problem solving, architectural decisions, and trade-offs.
-- **Level 3 — Deep-Dive Interview**: Challenging real-world interviewer probing resume claims, asking "why" and "how", introducing realistic edge cases, and adapting to previous answers.
-- **Dynamic Follow-up & Counter-Questions**: Reacts dynamically to weak, vague, or ambitious claims rather than following a static questionnaire.
-
-### 5. Mandatory Voice AI Interview
-- **Text-to-Speech (TTS)**: Web Speech Synthesis speaks interviewer questions aloud with playback controls.
-- **Speech-to-Text (STT)**: Web Speech Recognition transcribes candidate answers in real time with visual audio waveform.
-
-### 6. Video Interview Experience (Bonus / Highly Preferred)
-- Live candidate webcam stream (`getUserMedia`) alongside the AI Interviewer virtual avatar.
-- Toggle Camera (On/Off) and Microphone (Mute/Unmute).
-- **Real-Time Communication Signals HUD**:
-  - **Response Duration**: Live timer for each answer.
-  - **Speaking Pace**: Real-time Words Per Minute (WPM) calculation with pacing indicators (Optimal: 120–160 WPM).
-  - **Filler Word Detection**: Live counter detecting hesitation markers (*um*, *uh*, *like*, *you know*, *basically*, *actually*).
-  - **Delivery Confidence**: Dynamic rating based on flow, vocabulary, and hesitation rate.
-
-### 7. Step 4 — Interview Performance Report & Readiness Assessment
-- **Overall Score**: Comprehensive weighted score (0–100).
-- **Competency Scores Breakdown**:
-  - Role Fit
-  - Technical Knowledge
-  - Problem Solving
-  - Communication
-  - Confidence
-  - Depth of Understanding
-  - Behavioural Fit
-- **Communication & Behavioral Delivery Signals Summary**: Average WPM, total filler words, delivery confidence, and STAR method alignment.
-- **Question-Level Actionable Feedback**:
-  - Question Asked
-  - Candidate Answer
-  - Evaluation Assessment
-  - What Was Good
-  - What Could Be Better
-  - Ideal STAR Direction
-- **Interview Readiness Scale**:
-  - 🔴 **Not Ready**: Significant preparation required.
-  - 🟠 **Needs Preparation**: Important gaps remain.
-  - 🟡 **Interview Ready**: Candidate can reasonably attempt the interview.
-  - 🟢 **Strong Candidate**: Candidate demonstrates strong readiness.
-- **Prioritized Preparation Roadmap**: Priority 1–3 focus areas with review checklists.
-- **Print / Export PDF** and **Share Report** functionality.
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 THE CANDIDATE DILEMMA LIFECYCLE                             │
+├──────────────────────────┬──────────────────────────────────────────────────────────────────┤
+│ 1. Employer Intent       │ Decodes vague JDs into concrete skills, competencies & concepts  │
+│ 2. Objective Fit Match   │ Calculates quantitative match ratios and highlights resume gaps │
+│ 3. Anticipated Questions │ Synthesizes 3-stage adaptive technical and behavioural scenarios  │
+│ 4. Answer Effectiveness  │ Evaluates responses against the STAR framework with concrete tips│
+│ 5. Targeted Preparation  │ Constructs prioritized study roadmaps (Priority 1–3 checklists) │
+│ 6. Interview Readiness   │ Delivers an objective 4-tier readiness rating (🔴 🟠 🟡 🟢)       │
+└──────────────────────────┴──────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 🛠️ Architecture & Tech Stack
+## System Design & Core Architecture
+
+The platform follows a decoupled, cloud-native microservices topology featuring an asynchronous Python backend, a high-performance React SPA, and a streaming speech telemetry engine.
+
+```mermaid
+graph TD
+    subgraph Client ["Client Layer (React 19 + TypeScript)"]
+        UI[Interactive SPA Dashboard]
+        STT[Web Speech STT Engine]
+        TTS[Speech Synthesis TTS Engine]
+        RTC[WebRTC MediaStream HUD]
+        HUD[Telemetry Monitor: WPM / Fillers / Confidence]
+    end
+
+    subgraph Gateway ["Reverse Proxy & Ingress"]
+        Vite[Vite Reverse Proxy / CDN]
+    end
+
+    subgraph Service ["Backend Core (FastAPI + Uvicorn)"]
+        Router[REST API Endpoints]
+        DocParser[Document Extraction Engine: PyPDF / python-docx]
+        CohereService[Cohere LLM Reasoning & Prompt Orchestrator]
+        TelemetryService[Speech & Communication Analytics Engine]
+    end
+
+    subgraph External ["External Intelligence Layer"]
+        CohereAPI[(Cohere Command-R+ / Command-R LLM)]
+    end
+
+    UI -->|File Upload / Text| Vite
+    Vite -->|JSON / Multipart| Router
+    Router --> DocParser
+    DocParser --> Router
+    Router --> CohereService
+    CohereService -->|Structured Prompts| CohereAPI
+    CohereAPI -->|JSON Schema Responses| CohereService
+    CohereService --> Router
+    Router -->|Normalized Metrics & DTOs| UI
+    STT --> HUD
+    RTC --> HUD
+    HUD --> UI
+    UI --> TTS
+```
+
+---
+
+## Key Technical Innovations
+
+### 1. Zero-Mock Live LLM Reasoning Engine
+- Direct integration with **Cohere Command R+** (`command-r-plus-08-2024`, `command-r-08-2024`, `command-r7b-12-2024`) with automatic failover across models.
+- **Strict JSON-schema output enforcement** with automated repair heuristics to eliminate hallucinated response formats.
+- **Zero Mock / Fallback Stubs**: The platform executes 100% live inference. In the event of network disruption, users receive clean, recoverable error states with retry capabilities rather than synthetic fallback questions.
+
+### 2. Multi-Level Adaptive Interview Simulation
+The simulation is structured into three distinct difficulty levels rather than a static list of questions:
+- **Level 1 — Screening Interview**: Validates foundational claims, resume projects, motivation, and role alignment.
+- **Level 2 — Competency & Architecture**: Evaluates technical depth, problem-solving methodologies, and system trade-offs.
+- **Level 3 — Deep-Dive Probing Interview**: Emulates an executive interviewer by inspecting prior transcript turns, challenging vague answers, demanding quantitative metrics, and introducing realistic edge cases.
+
+### 3. Real-Time Multimodal Telemetry (Voice + Video HUD)
+- **Speech-to-Text (STT)**: Continuous transcription via Web Speech Recognition with dynamic audio waveform feedback.
+- **Text-to-Speech (TTS)**: Automatic question audio narration via the SpeechSynthesis API.
+- **Real-Time Communication Telemetry**:
+  - **Speaking Pace (WPM)**: Live calculation with dynamic pacing classification (Optimal: 120–160 WPM).
+  - **Filler Word Detection**: Real-time regex lexical analysis flagging hesitation markers (*um*, *uh*, *like*, *you know*, *basically*, *actually*).
+  - **Delivery Confidence Index**: Composite heuristic evaluated across response fluidity and filler-word density.
+- **WebRTC Camera Stream**: Candidate webcam integration side-by-side with the AI Interviewer virtual avatar.
+
+### 4. Robust Document Ingestion Engine
+- Supports `.pdf`, `.docx`, and `.txt` ingestion.
+- Binary streams are parsed entirely in-memory using `pypdf` and `python-docx`, preventing filesystem bloat and ensuring stateless execution.
+
+---
+
+## Data Models & API Specifications
+
+### REST API Endpoints
+
+| Method | Endpoint | Description | Request Payload | Response Model |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/` | Service health status | None | `HealthStatus` |
+| `POST` | `/api/upload-file` | In-memory resume/JD document parser | `Multipart/Form-Data` | `ParsedDocument` |
+| `POST` | `/api/analyze-jd` | Step 1: Role extraction & requirements | `AnalyzeJDRequest` | `RoleAnalysis` |
+| `POST` | `/api/analyze-candidate` | Step 2: Resume matching & gap analysis | `AnalyzeCandidateRequest` | `CandidateAnalysis` |
+| `POST` | `/api/generate-question` | Step 3: Adaptive multi-level question generator | `GenerateQuestionRequest` | `QuestionResponse` |
+| `POST` | `/api/evaluate-answer` | Step 3: Real-time response evaluation (STAR) | `EvaluateAnswerRequest` | `EvalResponse` |
+| `POST` | `/api/generate-report` | Step 4: Comprehensive performance report | `GenerateReportRequest` | `ReportResponse` |
+
+### Core Data Schemas
+
+```typescript
+export interface RoleAnalysis {
+  role_title: string;
+  key_responsibilities: string[];
+  required_skills: string[];
+  preferred_skills: string[];
+  technical_competencies: string[];
+  behavioural_competencies: string[];
+  experience_expectations: string;
+  important_keywords: string[];
+  important_concepts: string[];
+  key_qualifications: string[];
+}
+
+export interface CandidateAnalysis {
+  job_fit_score: number;
+  fit_label: string;
+  candidate_key_skills: string[];
+  relevant_experience: string[];
+  relevant_projects: string[];
+  relevant_achievements: string[];
+  strengths_against_jd: string[];
+  missing_skills: string[];
+  weak_or_insufficient_areas: string[];
+  probing_points: string[];
+  preparation_gaps: string[];
+  strong_matches: string[];
+  partial_matches: string[];
+  missing_weak: string[];
+}
+
+export interface ReportResponse {
+  overall_score: number;
+  readiness_status: string;
+  readiness_code: "green" | "yellow" | "orange" | "red";
+  readiness_description: string;
+  competency_scores: {
+    role_fit: number;
+    technical_knowledge: number;
+    problem_solving: number;
+    communication: number;
+    confidence: number;
+    depth_of_understanding: number;
+    behavioural_fit: number;
+  };
+  strengths: string[];
+  weaknesses: string[];
+  preparation_gaps: {
+    priority: string;
+    topic: string;
+    review_points: string[];
+  }[];
+  question_evaluations: {
+    question: string;
+    candidate_answer: string;
+    assessment: string;
+    what_was_good: string;
+    what_could_be_better: string;
+    ideal_direction: string;
+  }[];
+  communication_signals?: {
+    avg_wpm: number;
+    total_filler_words: number;
+    confidence_level: string;
+    pace_status: string;
+  };
+}
+```
+
+---
+
+## Repository & Directory Structure
 
 ```
 interview-accelerator/
 ├── backend/
-│   ├── main.py              # FastAPI server (CORS, file uploads, REST endpoints)
-│   ├── cohere_service.py    # LLM reasoning, NLP heuristics, adaptive logic & scoring
-│   ├── doc_parser.py        # PDF & DOCX document parser
-│   └── requirements.txt     # Python dependencies
-└── frontend/
-    ├── src/
-    │   ├── App.tsx          # React application (Dashboard, Analysis, Room, Report, Plan, History)
-    │   ├── api.ts           # Type-safe API client with auto-fallback connection
-    │   ├── index.css        # Vanilla CSS design system, Video HUD & Print stylesheets
-    │   └── main.tsx         # Entry point
-    ├── vite.config.ts       # Vite configuration with backend proxy
-    └── package.json         # Dependencies & scripts
+│   ├── main.py                     # FastAPI server, CORS middleware, API route handlers
+│   ├── cohere_service.py           # LLM client orchestration, JSON repairs, prompting engine
+│   ├── doc_parser.py               # In-memory PDF, DOCX, and text stream decoders
+│   ├── requirements.txt            # Python dependencies (FastAPI, Uvicorn, Cohere, etc.)
+│   └── .env.example                # Template for environment variables
+├── frontend/
+│   ├── src/
+│   │   ├── App.tsx                 # Core React state machine & view router
+│   │   ├── api.ts                  # Type-safe API client with resilient network failover
+│   │   ├── index.css               # Vanilla CSS design system, typography tokens & HUD styles
+│   │   ├── main.tsx                # React DOM root entrypoint
+│   │   └── vite-env.d.ts           # Environment type declarations
+│   ├── index.html                  # Application document shell
+│   ├── vite.config.ts              # Vite configuration & backend reverse proxy
+│   ├── tsconfig.json               # TypeScript compiler configuration
+│   └── package.json                # Frontend dependencies & npm run scripts
+├── render.yaml                     # Infrastructure-as-Code (IaC) Render Blueprint
+├── .gitignore                      # Git ignore declarations
+└── README.md                       # Comprehensive enterprise documentation
 ```
-
-- **Frontend**: React 19, TypeScript, Vite, Vanilla CSS with custom modern design system.
-- **Backend**: FastAPI, Uvicorn, Pydantic, Python 3.
-- **AI & Evaluation**: Cohere Command R+ with robust NLP fallback heuristics.
-- **Speech & Media**: Web Speech Recognition (STT), SpeechSynthesis (TTS), WebRTC `getUserMedia` for video stream.
 
 ---
 
-## ⚙️ Running Locally
+## Installation & Local Operation
 
-### 1. Prerequisites
-- Python 3.10+
-- Node.js 18+
+### Prerequisites
+- **Python**: Version `3.10` or higher
+- **Node.js**: Version `18.0` or higher (Node 20+ recommended)
+- **Package Managers**: `pip` and `npm`
+- **Cohere API Key**: Active key from [dashboard.cohere.com](https://dashboard.cohere.com/)
 
-### 2. Backend Setup
+---
+
+### Step 1: Clone Repository
+```bash
+git clone https://github.com/hirdeshds/interview-accelerator.git
+cd interview-accelerator
+```
+
+### Step 2: Backend Configuration & Execution
 ```bash
 cd backend
-pip install -r requirements.txt
-python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
-```
-The FastAPI backend will run on `http://127.0.0.1:8000`.  
-API documentation is accessible at `http://127.0.0.1:8000/docs`.
 
-### 3. Frontend Setup
+# Create and activate virtual environment
+python -m venv venv
+# Windows (PowerShell):
+.\venv\Scripts\Activate.ps1
+# macOS / Linux:
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment variables
+# Create a .env file in the backend directory:
+echo "COHERE_API_KEY=your_cohere_api_key_here" > .env
+
+# Start FastAPI development server
+python main.py
+```
+> The backend server will initialize on **`http://127.0.0.1:8005`**.  
+> Interactive Swagger API documentation will be available at **`http://127.0.0.1:8005/docs`**.
+
+---
+
+### Step 3: Frontend Configuration & Execution
+Open a secondary terminal:
 ```bash
 cd frontend
+
+# Install dependencies
 npm install
+
+# Start Vite development server
 npm run dev
 ```
-The frontend application will start on `http://localhost:8443` (or the assigned Vite port).  
-All `/api/*` calls are automatically proxied to `http://127.0.0.1:8005`.
+> The frontend application will start on **`http://localhost:8443`** (or default Vite port).  
+> All `/api/*` requests are automatically reverse-proxied to `http://127.0.0.1:8005`.
 
 ---
 
-## ☁️ Deploying on Render (Frontend + Backend)
+## Production Deployment (Render Infrastructure)
 
-You can deploy both services to **[Render](https://render.com)** using either the automated Blueprint or manual setup:
+The repository provides an automated Infrastructure-as-Code configuration via [`render.yaml`](render.yaml).
 
-### Method A: Automated Deployment via Blueprint (`render.yaml`) — *Recommended*
-1. Push your repository to GitHub.
-2. Go to [dashboard.render.com](https://dashboard.render.com) and click **New +** &rarr; **Blueprint**.
-3. Select your GitHub repository.
-4. Render will read `render.yaml` and configure:
-   - **`interview-accelerator-backend`** (Python Web Service)
-   - **`interview-accelerator-frontend`** (Static Site with SPA rewrite rules)
-   - Auto-link `VITE_API_URL` from the backend to the frontend.
-5. Click **Apply**. Both services will build and deploy automatically!
-
----
-
-### Method B: Manual Deployment on Render
-
-#### 1. Deploy the Backend (FastAPI Web Service)
-1. Go to [dashboard.render.com](https://dashboard.render.com) &rarr; **New +** &rarr; **Web Service**.
-2. Connect your GitHub repository.
-3. Configure the settings:
-   - **Name**: `interview-accelerator-backend`
-   - **Root Directory**: `backend`
-   - **Environment**: `Python`
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
-   - **Plan**: Free
-4. *(Optional)* Add Environment Variable:
-   - `COHERE_API_KEY`: `<your_cohere_key>` (optional; fallback heuristics handle parsing if omitted).
-5. Click **Create Web Service**. Copy your backend URL (e.g., `https://interview-accelerator-backend.onrender.com`).
-
-#### 2. Deploy the Frontend (React Static Site)
-1. Go to [dashboard.render.com](https://dashboard.render.com) &rarr; **New +** &rarr; **Static Site**.
-2. Connect the same GitHub repository.
-3. Configure the settings:
-   - **Name**: `interview-accelerator-frontend`
-   - **Root Directory**: `frontend`
-   - **Build Command**: `npm install && npm run build`
-   - **Publish Directory**: `dist`
-4. Add Environment Variable:
-   - `VITE_API_URL`: Your backend URL from step 1 (e.g., `https://interview-accelerator-backend.onrender.com`).
-5. Under **Redirects/Rewrites**:
-   - **Source**: `/*`
-   - **Destination**: `/index.html`
-   - **Action**: `Rewrite`
-6. Click **Create Static Site**. Your application will be live at `https://interview-accelerator-frontend.onrender.com`!
+### Automated Blueprint Deployment (1-Click)
+1. Fork or push this repository to GitHub.
+2. Navigate to [dashboard.render.com](https://dashboard.render.com) and click **New +** &rarr; **Blueprint**.
+3. Connect your repository.
+4. Render will parse [`render.yaml`](render.yaml) and automatically provision:
+   - **`interview-accelerator-backend`**: Python Web Service executing `uvicorn main:app --host 0.0.0.0 --port $PORT`.
+   - **`interview-accelerator-frontend`**: Static Site deploying `dist/` across Render's global CDN with SPA rewrites (`/*` &rarr; `/index.html`).
+   - Automatically injects `VITE_API_URL` from the backend to the frontend.
+5. Provide your `COHERE_API_KEY` when prompted and click **Apply**.
 
 ---
 
-## 🧠 AI & Evaluation Methodology
+## Security, Privacy & Reliability Standards
 
-1. **Role Analysis**: Extracts core competencies, required technologies, and experience expectations from raw JD text.
-2. **Candidate Gap Analysis**: Compares candidate resume entities against role requirements, computing an objective match ratio and identifying probing targets.
-3. **Adaptive Question Generation**: Uses candidate resume projects, target level (1, 2, or 3), and previous interview turn context to formulate personalized, non-generic questions.
-4. **Answer Evaluation**: Scores answers on technical precision, STAR methodology structure, and quantifiable metrics, generating actionable improvement suggestions.
-5. **Speech & Communication Signals**: Computes real-time Words Per Minute (WPM), hesitation patterns, and filler-word density to evaluate communication clarity.
+- **In-Memory File Processing**: Candidate resumes and JDs are processed in ephemeral memory buffers and never written to unencrypted disks.
+- **CORS Hardening**: Strict HTTP header controls across internal endpoints.
+- **Environment Isolation**: API tokens and credentials reside strictly in server environments; no private keys are leaked in client bundles.
+- **Input Sanitization**: Multi-layer bounds-checking and UTF-8 normalization protecting document ingestion routes.
+
+---
+
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+Built with ❤️ for <b>Student Credibility</b> to empower candidates worldwide.
+</div>

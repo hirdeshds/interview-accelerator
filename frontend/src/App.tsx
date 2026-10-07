@@ -384,6 +384,66 @@ function Dashboard({
   </div>;
 }
 
+const SAMPLE_JD = `Role: AI Engineer Intern
+Company: Student Credibility
+Location: Remote
+
+About the Role:
+We are looking for an ambitious AI Engineer Intern to build generative AI applications, intelligent search, and candidate readiness simulations.
+
+Key Responsibilities:
+- Design and deploy end-to-end Retrieval-Augmented Generation (RAG) pipelines for document search and knowledge retrieval.
+- Build clean, asynchronous backend REST APIs using Python and FastAPI.
+- Fine-tune, prompt-engineer, and benchmark Large Language Models (LLMs) for low latency and high factual accuracy.
+- Implement vector database indexing (Qdrant, Pinecone) with hybrid search and dynamic reranking.
+- Work closely with frontend engineers to integrate real-time voice and telemetry features.
+
+Required Skills:
+- Proficiency in Python, object-oriented design, and asynchronous programming.
+- Hands-on experience with LLMs (Cohere, OpenAI, Anthropic) and RAG architectures.
+- Experience with vector databases (Qdrant, Pinecone, FAISS, ChromaDB).
+- Experience designing REST APIs using FastAPI or Flask.
+- Foundational understanding of NLP, embeddings, and tokenization.
+
+Preferred Skills:
+- Experience with Web Speech API, audio processing, or WebRTC streams.
+- Experience with Docker and cloud deployments (Render, AWS, GCP).
+
+Behavioural Competencies:
+- Strong problem-solving mindset and analytical rigor.
+- Clear technical communication and ability to explain architectural trade-offs.
+- High learning velocity and curiosity.`;
+
+const SAMPLE_RESUME = `Alex Chen
+Email: alex.chen@university.edu | GitHub: github.com/alexchen-ai | Portfolio: alexchen.dev
+
+EDUCATION:
+B.Tech in Computer Science & Engineering (2022 - 2026) | GPA: 8.9/10
+
+TECHNICAL SKILLS:
+- Languages: Python (Advanced), TypeScript, JavaScript, SQL
+- Frameworks & Libraries: FastAPI, Flask, PyTorch, LangChain, HuggingFace
+- AI/ML & LLM: RAG Architectures, Vector Search (Qdrant, Pinecone), Sentence Transformers, Prompt Engineering
+- Tools & Cloud: Docker, Git, Linux, PostgreSQL, Render
+
+PROJECTS:
+1. Enterprise Knowledge RAG Assistant (FastAPI, Qdrant, Cohere)
+- Engineered a modular RAG pipeline indexing 50,000+ academic papers using sentence-transformers embeddings.
+- Reduced retrieval latency from 450ms to 120ms by implementing hybrid search and cross-encoder reranking.
+- Deployed FastAPI backend on cloud with sub-second end-to-end response times and 92% retrieval precision.
+
+2. Automated Code Review LLM Bot (Python, PyTorch, Transformers)
+- Built an automated pull request reviewer using fine-tuned open-source LLMs to identify security vulnerabilities.
+- Evaluated model outputs using AST static analysis, achieving an 18% improvement in bug detection over static linters.
+
+3. Multimodal Voice Assistant (FastAPI, Web Speech API)
+- Developed a real-time conversational agent supporting speech-to-text transcription and audio response streaming.
+
+EXPERIENCE:
+Machine Learning Research Assistant | University AI Lab (May 2024 - Dec 2024)
+- Investigated hallucination mitigation techniques in small-parameter language models.
+- Authored benchmarks evaluating trade-offs between chunk size, embedding dimensions, and context retention in RAG pipelines.`;
+
 function SetupModal({
   onClose,
   onAnalyze,
@@ -400,8 +460,8 @@ function SetupModal({
   setJdText: (s: string) => void;
   resumeText: string;
   setResumeText: (s: string) => void;
-  apiKey: string;
-  setApiKey: (s: string) => void;
+  apiKey?: string;
+  setApiKey?: (s: string) => void;
 }) {
   const [jdMode, setJdMode] = useState<"paste" | "upload">("paste");
   const [resumeMode, setResumeMode] = useState<"paste" | "upload">("paste");
@@ -410,6 +470,14 @@ function SetupModal({
   const [jdFileName, setJdFileName] = useState<string | null>(null);
   const [resumeFileName, setResumeFileName] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const handleLoadSample = () => {
+    setJdMode("paste");
+    setResumeMode("paste");
+    setJdText(SAMPLE_JD);
+    setResumeText(SAMPLE_RESUME);
+    setErrorMsg(null);
+  };
 
   const handleJdUpload = async (file: File) => {
     setUploadingJd(true);
@@ -446,7 +514,10 @@ function SetupModal({
           <div className="modal-title">Prepare for a Specific Job Interview</div>
           <p>Provide the job description and candidate resume. FastAPI will analyze fit and generate technical interview questions.</p>
         </div>
-        <button className="icon-button" onClick={onClose}><Icon name="close" /></button>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <Button variant="secondary" icon="spark" onClick={handleLoadSample}>Load Sample JD & Resume</Button>
+          <button className="icon-button" onClick={onClose} aria-label="Close dialog"><Icon name="close" /></button>
+        </div>
       </div>
       
       {errorMsg && <div className="adaptive-banner" style={{ background: '#fee2e2', color: '#991b1b', margin: '0 0 1rem 0' }}><Icon name="alert" /><div><b>Error</b><span>{errorMsg}</span></div></div>}
@@ -475,11 +546,6 @@ function SetupModal({
           )}
           <div className="privacy-note"><Icon name="file" size={14} /> {resumeText.trim() ? `${resumeText.split(/\s+/).filter(Boolean).length} words entered` : "Enter Resume text or upload file"}</div>
         </div>
-      </div>
-
-      <div style={{ marginTop: '0.75rem', padding: '0.5rem 0.75rem', borderRadius: '8px', background: 'var(--bg-subtle, #f8fafc)', border: '1px solid var(--border-color, #e2e8f0)' }}>
-        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.2rem' }}>Cohere API Key (Optional)</label>
-        <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="Leave blank to use default server key / backend fallback engine" style={{ width: '100%', padding: '0.4rem 0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }} />
       </div>
 
       <div className="modal-footer">
@@ -752,8 +818,9 @@ function Interview({
   const [evaluating, setEvaluating] = useState(false);
   const [latestEval, setLatestEval] = useState<EvalResponse | null>(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [speakerPlaying, setSpeakerPlaying] = useState(false);
   const [micError, setMicError] = useState<string | null>(null);
+  const [questionError, setQuestionError] = useState<string | null>(null);
+  const [evalError, setEvalError] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
 
   // Video Interview Stream & Controls
@@ -837,40 +904,15 @@ function Interview({
   const fetchNextQuestion = async (targetLevel: number, historyToUse: QuestionTurn[]) => {
     setLoadingQuestion(true);
     setLatestEval(null);
+    setQuestionError(null);
     setCandidateAnswer("");
     setResponseTimer(0);
     try {
-      const defaultRole: RoleAnalysis = roleAnalysis || {
-        role_title: "Target Position",
-        key_responsibilities: [],
-        required_skills: ["Software Engineering"],
-        preferred_skills: [],
-        technical_competencies: [],
-        behavioural_competencies: [],
-        experience_expectations: "",
-        important_keywords: [],
-        important_concepts: [],
-        key_qualifications: [],
-      };
+      if (!roleAnalysis || !candidateAnalysis) {
+        throw new Error("Missing role or candidate analysis. Please analyze a Job Description and Resume first.");
+      }
 
-      const defaultCand: CandidateAnalysis = candidateAnalysis || {
-        job_fit_score: 75,
-        fit_label: "Good Match",
-        candidate_key_skills: [],
-        relevant_experience: [],
-        relevant_projects: [],
-        relevant_achievements: [],
-        strengths_against_jd: [],
-        missing_skills: [],
-        weak_or_insufficient_areas: [],
-        probing_points: [],
-        preparation_gaps: [],
-        strong_matches: [],
-        partial_matches: [],
-        missing_weak: [],
-      };
-
-      const qRes = await generateQuestion(jdText, resumeText, defaultRole, defaultCand, targetLevel, historyToUse, apiKey);
+      const qRes = await generateQuestion(jdText, resumeText, roleAnalysis, candidateAnalysis, targetLevel, historyToUse, apiKey);
       setCurrentQuestionData(qRes);
 
       // Auto-speak question if speech is enabled
@@ -878,17 +920,11 @@ function Interview({
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(qRes.question);
         utterance.rate = 1.0;
-        utterance.onend = () => setSpeakerPlaying(false);
-        setSpeakerPlaying(true);
         window.speechSynthesis.speak(utterance);
       }
     } catch (err: any) {
       console.error("Failed to generate question", err);
-      setCurrentQuestionData({
-        question: `Could you walk me through your experience with ${roleAnalysis?.required_skills?.[0] || "core domain skills"} and how you solved a challenging technical problem?`,
-        interviewer_intent: "Assess core technical depth.",
-        expected_key_points: ["Clear technical reasoning", "Problem resolution", "Impact"],
-      });
+      setQuestionError(err.message || "Failed to generate dynamic interview question from AI backend.");
     } finally {
       setLoadingQuestion(false);
     }
@@ -924,7 +960,7 @@ function Interview({
           setMicError("Microphone permission was blocked. Please click the permissions icon (lock/tune) in your browser address bar to allow Microphone, or type your answer directly.");
           return;
         } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
-          setMicError("No microphone hardware device found on this computer. You can type your response or use 'Quick Demo Response'.");
+          setMicError("No microphone hardware device found on this computer. You can type your response directly in the text area.");
           return;
         }
       }
@@ -932,7 +968,7 @@ function Interview({
 
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      setMicError("Web Speech API is not supported in this browser (Chrome and Edge recommended). You can type your answer or click 'Quick Demo Response'.");
+      setMicError("Web Speech API is not supported in this browser (Chrome and Edge recommended). You can type your response directly in the text area.");
       return;
     }
 
@@ -1009,42 +1045,17 @@ function Interview({
     }
 
     setEvaluating(true);
+    setEvalError(null);
     try {
-      const defaultRole: RoleAnalysis = roleAnalysis || {
-        role_title: "Target Role",
-        key_responsibilities: [],
-        required_skills: [],
-        preferred_skills: [],
-        technical_competencies: [],
-        behavioural_competencies: [],
-        experience_expectations: "",
-        important_keywords: [],
-        important_concepts: [],
-        key_qualifications: [],
-      };
-
-      const defaultCand: CandidateAnalysis = candidateAnalysis || {
-        job_fit_score: 75,
-        fit_label: "Good Match",
-        candidate_key_skills: [],
-        relevant_experience: [],
-        relevant_projects: [],
-        relevant_achievements: [],
-        strengths_against_jd: [],
-        missing_skills: [],
-        weak_or_insufficient_areas: [],
-        probing_points: [],
-        preparation_gaps: [],
-        strong_matches: [],
-        partial_matches: [],
-        missing_weak: [],
-      };
+      if (!roleAnalysis || !candidateAnalysis) {
+        throw new Error("Missing active role or candidate analysis.");
+      }
 
       const evalRes = await evaluateAnswer(
         currentQuestionData.question,
         candidateAnswer,
-        defaultRole,
-        defaultCand,
+        roleAnalysis,
+        candidateAnalysis,
         level,
         interviewHistory,
         apiKey
@@ -1072,6 +1083,7 @@ function Interview({
       setInterviewHistory(prev => [...prev, newTurn]);
     } catch (err: any) {
       console.error("Evaluation error", err);
+      setEvalError(err.message || "Failed to evaluate candidate response from AI backend.");
     } finally {
       setEvaluating(false);
     }
@@ -1099,6 +1111,7 @@ function Interview({
         setInterviewHistory([]);
         setStarted(true);
       }}
+      onGoToDashboard={() => setView("dashboard")}
       roleAnalysis={roleAnalysis}
       candidateAnalysis={candidateAnalysis}
     />;
@@ -1242,6 +1255,13 @@ function Interview({
         <div className="question-card">
           {loadingQuestion ? (
             <p><em>Generating candidate-specific question based on JD and Resume...</em></p>
+          ) : questionError ? (
+            <div style={{ color: "#991b1b" }}>
+              <p><strong>Error Generating Question:</strong> {questionError}</p>
+              <Button style={{ marginTop: "0.5rem" }} onClick={() => fetchNextQuestion(level, interviewHistory)}>
+                Retry Generation
+              </Button>
+            </div>
           ) : (
             <>
               <p>“{currentQuestionData?.question}”</p>
@@ -1358,13 +1378,39 @@ function Interview({
   </div>;
 }
 
-function InterviewSetup({ onStart, roleAnalysis, candidateAnalysis }: { onStart: (videoMode: boolean) => void; roleAnalysis: RoleAnalysis | null; candidateAnalysis: CandidateAnalysis | null }) {
+function InterviewSetup({
+  onStart,
+  onGoToDashboard,
+  roleAnalysis,
+  candidateAnalysis,
+}: {
+  onStart: (videoMode: boolean) => void;
+  onGoToDashboard: () => void;
+  roleAnalysis: RoleAnalysis | null;
+  candidateAnalysis: CandidateAnalysis | null;
+}) {
   const [mode, setMode] = useState<"video" | "voice" | "text">("video");
+
+  if (!roleAnalysis || !candidateAnalysis) {
+    return (
+      <div className="page setup-page">
+        <div className="panel" style={{ padding: "3rem", textAlign: "center", maxWidth: "600px", margin: "2rem auto" }}>
+          <Icon name="briefcase" size={40} />
+          <h2 style={{ marginTop: "1rem", marginBottom: "0.5rem" }}>Target Role Setup Required</h2>
+          <p style={{ color: "#64748b", marginBottom: "1.5rem" }}>
+            To generate personalized, non-generic interview questions, please provide your target Job Description and Resume first.
+          </p>
+          <Button icon="plus" onClick={onGoToDashboard}>Go to Dashboard & Set Up Role</Button>
+        </div>
+      </div>
+    );
+  }
+
   return <div className="page setup-page">
     <div className="setup-intro">
       <Badge tone="green"><Icon name="check" size={13} /> ANALYSIS COMPLETE</Badge>
       <div className="page-title">Your AI Interview Room is Ready</div>
-      <p>A personalised technical interview simulation built specifically for {roleAnalysis?.role_title || "the target role"}.</p>
+      <p>A personalised technical interview simulation built specifically for {roleAnalysis.role_title}.</p>
     </div>
     <div className="ready-layout">
       <div className="panel level-panel">
@@ -1762,42 +1808,16 @@ export default function App() {
 
   const handleCompleteInterview = async (history: QuestionTurn[]) => {
     try {
-      const defaultRole: RoleAnalysis = roleAnalysis || {
-        role_title: "Target Position",
-        key_responsibilities: [],
-        required_skills: ["Software Development"],
-        preferred_skills: [],
-        technical_competencies: [],
-        behavioural_competencies: [],
-        experience_expectations: "",
-        important_keywords: [],
-        important_concepts: [],
-        key_qualifications: [],
-      };
+      if (!roleAnalysis || !candidateAnalysis) {
+        throw new Error("Cannot generate performance report without active role and candidate analysis.");
+      }
 
-      const defaultCand: CandidateAnalysis = candidateAnalysis || {
-        job_fit_score: 75,
-        fit_label: "Good Match",
-        candidate_key_skills: [],
-        relevant_experience: [],
-        relevant_projects: [],
-        relevant_achievements: [],
-        strengths_against_jd: [],
-        missing_skills: [],
-        weak_or_insufficient_areas: [],
-        probing_points: [],
-        preparation_gaps: [],
-        strong_matches: [],
-        partial_matches: [],
-        missing_weak: [],
-      };
-
-      const repRes = await generateReport(jdText, resumeText, defaultRole, defaultCand, history, apiKey);
+      const repRes = await generateReport(jdText, resumeText, roleAnalysis, candidateAnalysis, history, apiKey);
       setPerformanceReport(repRes);
 
       const newSession: CompletedSession = {
         id: Date.now().toString(),
-        roleTitle: defaultRole.role_title,
+        roleTitle: roleAnalysis.role_title,
         date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }),
         score: repRes.overall_score,
         readinessStatus: repRes.readiness_status,
