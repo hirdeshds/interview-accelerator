@@ -2,6 +2,15 @@ let RAW_BASE_URL = (import.meta.env.VITE_API_URL || "").trim().replace(/\/+$/, "
 if (RAW_BASE_URL && !RAW_BASE_URL.startsWith("http://") && !RAW_BASE_URL.startsWith("https://")) {
   RAW_BASE_URL = `https://${RAW_BASE_URL}`;
 }
+if (RAW_BASE_URL) {
+  try {
+    const urlObj = new URL(RAW_BASE_URL);
+    if (!urlObj.hostname.includes(".") && urlObj.hostname !== "localhost") {
+      urlObj.hostname = `${urlObj.hostname}.onrender.com`;
+      RAW_BASE_URL = urlObj.origin;
+    }
+  } catch {}
+}
 const BASE_URL = RAW_BASE_URL;
 const DIRECT_BACKEND_URL = "http://127.0.0.1:8005";
 
