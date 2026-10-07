@@ -1,3 +1,11 @@
+import os
+from dotenv import load_dotenv
+
+dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+load_dotenv()
+
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -72,48 +80,63 @@ async def upload_file(file: UploadFile = File(...)):
 def analyze_jd(req: AnalyzeJDRequest):
     if not req.jd_text.strip():
         raise HTTPException(status_code=400, detail="Job Description cannot be empty")
-    return cohere_service.analyze_job_description(req.jd_text, req.api_key)
+    try:
+        return cohere_service.analyze_job_description(req.jd_text, req.api_key)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/analyze-candidate")
 def analyze_candidate(req: AnalyzeCandidateRequest):
     if not req.resume_text.strip():
         raise HTTPException(status_code=400, detail="Resume text cannot be empty")
-    return cohere_service.analyze_candidate_fit(req.jd_text, req.resume_text, req.role_analysis, req.api_key)
+    try:
+        return cohere_service.analyze_candidate_fit(req.jd_text, req.resume_text, req.role_analysis, req.api_key)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/generate-question")
 def generate_question(req: GenerateQuestionRequest):
-    return cohere_service.generate_interview_question(
-        req.jd_text,
-        req.resume_text,
-        req.role_analysis,
-        req.candidate_analysis,
-        req.level,
-        req.history,
-        req.api_key
-    )
+    try:
+        return cohere_service.generate_interview_question(
+            req.jd_text,
+            req.resume_text,
+            req.role_analysis,
+            req.candidate_analysis,
+            req.level,
+            req.history,
+            req.api_key
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/evaluate-answer")
 def evaluate_answer(req: EvaluateAnswerRequest):
-    return cohere_service.evaluate_candidate_answer(
-        req.question,
-        req.answer,
-        req.role_analysis,
-        req.candidate_analysis,
-        req.level,
-        req.history,
-        req.api_key
-    )
+    try:
+        return cohere_service.evaluate_candidate_answer(
+            req.question,
+            req.answer,
+            req.role_analysis,
+            req.candidate_analysis,
+            req.level,
+            req.history,
+            req.api_key
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/generate-report")
 def generate_report(req: GenerateReportRequest):
-    return cohere_service.generate_performance_report(
-        req.jd_text,
-        req.resume_text,
-        req.role_analysis,
-        req.candidate_analysis,
-        req.history,
-        req.api_key
-    )
+    try:
+        return cohere_service.generate_performance_report(
+            req.jd_text,
+            req.resume_text,
+            req.role_analysis,
+            req.candidate_analysis,
+            req.history,
+            req.api_key
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

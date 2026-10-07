@@ -411,32 +411,6 @@ function SetupModal({
   const [resumeFileName, setResumeFileName] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const loadSampleData = () => {
-    setJdText(`Job Title: AI Engineer Intern
-Company: TechCorp AI
-Responsibilities:
-- Build AI-powered applications, develop reliable REST APIs using Python & FastAPI.
-- Work with LLM integration, RAG pipelines, vector databases (Qdrant/Pinecone/Chroma), and prompt engineering.
-- Collaborate with engineering team on code reviews, automated testing, and CI/CD.
-Requirements:
-- Strong Python fundamentals, data structures, and RESTful API development.
-- Knowledge of Machine Learning fundamentals, LLMs, embeddings, and vector databases.
-- Experience with Docker, Git, and cloud services (AWS/GCP) is a plus.`);
-
-    setResumeText(`Hirdesh Kumar
-AI / ML Developer & Software Engineer
-
-Skills:
-- Languages & Frameworks: Python, FastAPI, JavaScript, React, Node.js, SQL, C++
-- AI/ML Tools: LLMs, RAG, LangChain, PyTorch, Vector Databases, Embeddings, Scikit-learn
-- DevOps & Tools: Git, Docker, REST APIs, Linux
-
-Projects:
-- RAG Document Question Answering System: Developed a retrieval-augmented generation application using FastAPI and vector embeddings.
-- AI Code Assistant: Built a Python service interfacing with LLMs for automated code feedback.
-- RESTful API Backend: Designed scalable backend endpoints with SQLite/PostgreSQL database integration.`);
-  };
-
   const handleJdUpload = async (file: File) => {
     setUploadingJd(true);
     setErrorMsg(null);
@@ -473,12 +447,6 @@ Projects:
           <p>Provide the job description and candidate resume. FastAPI will analyze fit and generate technical interview questions.</p>
         </div>
         <button className="icon-button" onClick={onClose}><Icon name="close" /></button>
-      </div>
-
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "0.5rem" }}>
-        <button className="text-button" onClick={loadSampleData} style={{ fontSize: "0.85rem", color: "#3b82f6" }}>
-          <Icon name="spark" size={14} /> Load sample JD & Resume
-        </button>
       </div>
       
       {errorMsg && <div className="adaptive-banner" style={{ background: '#fee2e2', color: '#991b1b', margin: '0 0 1rem 0' }}><Icon name="alert" /><div><b>Error</b><span>{errorMsg}</span></div></div>}
@@ -1020,12 +988,6 @@ function Interview({
     }
   };
 
-  const handleInsertSampleAnswer = () => {
-    setMicError(null);
-    const sample = `In my project, I built an end-to-end RAG question answering pipeline using FastAPI, Python, and Qdrant vector database. We chunked documents with sentence-transformers and evaluated retrieval latency, achieving 120ms average response time with a 22% improvement in precision over baseline.`;
-    setCandidateAnswer(sample);
-  };
-
   const handleSpeakQuestion = () => {
     if (!currentQuestionData?.question) return;
     if ("speechSynthesis" in window) {
@@ -1134,6 +1096,7 @@ function Interview({
     return <InterviewSetup
       onStart={(chosenVideoMode) => {
         setVideoMode(chosenVideoMode);
+        setInterviewHistory([]);
         setStarted(true);
       }}
       roleAnalysis={roleAnalysis}
@@ -1300,14 +1263,9 @@ function Interview({
           />
 
           {micError && (
-            <div style={{ marginTop: '0.5rem', width: '100%', padding: '0.6rem 0.8rem', borderRadius: '8px', background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Icon name="alert" size={16} />
-                <span>{micError}</span>
-              </div>
-              <button className="text-button" onClick={handleInsertSampleAnswer} type="button" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', color: '#b91c1c' }}>
-                Insert Sample Speech &rarr;
-              </button>
+            <div style={{ marginTop: '0.5rem', width: '100%', padding: '0.6rem 0.8rem', borderRadius: '8px', background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Icon name="alert" size={16} />
+              <span>{micError}</span>
             </div>
           )}
 
@@ -1326,9 +1284,6 @@ function Interview({
             </div>
 
             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-              <button className="text-button" onClick={handleInsertSampleAnswer} type="button" style={{ fontSize: '0.8rem', color: '#2563eb' }}>
-                <Icon name="spark" size={14} /> Quick Demo Response
-              </button>
               <Button icon="send" onClick={handleSubmitAnswer} disabled={evaluating || !candidateAnswer.trim()}>
                 {evaluating ? "Evaluating Answer..." : "Submit Answer"}
               </Button>
