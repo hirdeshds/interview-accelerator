@@ -644,7 +644,17 @@ function LoadingAnalysis({
   </div>;
 }
 
-function Analysis({ setView, roleAnalysis, candidateAnalysis }: { setView: (v: View) => void; roleAnalysis: RoleAnalysis | null; candidateAnalysis: CandidateAnalysis | null }) {
+function Analysis({
+  setView,
+  onStartInterview,
+  roleAnalysis,
+  candidateAnalysis,
+}: {
+  setView: (v: View) => void;
+  onStartInterview: () => void;
+  roleAnalysis: RoleAnalysis | null;
+  candidateAnalysis: CandidateAnalysis | null;
+}) {
   const [tab, setTab] = useState("overview");
 
   if (!roleAnalysis || !candidateAnalysis) {
@@ -664,7 +674,7 @@ function Analysis({ setView, roleAnalysis, candidateAnalysis }: { setView: (v: V
       </div>
       <div className="analysis-actions">
         <Button variant="secondary" onClick={() => setView("dashboard")}>Save & exit</Button>
-        <Button onClick={() => setView("interview")}>Start personalised interview <Icon name="arrow" size={16} /></Button>
+        <Button onClick={onStartInterview}>Start personalised interview <Icon name="arrow" size={16} /></Button>
       </div>
     </section>
 
@@ -809,8 +819,9 @@ function Interview({
   interviewHistory: QuestionTurn[];
   setInterviewHistory: React.Dispatch<React.SetStateAction<QuestionTurn[]>>;
   onComplete: (history: QuestionTurn[]) => void;
+  started: boolean;
+  setStarted: (s: boolean) => void;
 }) {
-  const [started, setStarted] = useState(false);
   const [level, setLevel] = useState(1);
   const [currentQuestionData, setCurrentQuestionData] = useState<QuestionResponse | null>(null);
   const [loadingQuestion, setLoadingQuestion] = useState(false);
@@ -916,11 +927,15 @@ function Interview({
       setCurrentQuestionData(qRes);
 
       // Auto-speak question if speech is enabled
-      if ("speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(qRes.question);
-        utterance.rate = 1.0;
-        window.speechSynthesis.speak(utterance);
+      try {
+        if (typeof window !== "undefined" && "speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(qRes.question);
+          utterance.rate = 1.0;
+          window.speechSynthesis.speak(utterance);
+        }
+      } catch (speechErr) {
+        console.warn("Speech synthesis notice:", speechErr);
       }
     } catch (err: any) {
       console.error("Failed to generate question", err);
@@ -1760,15 +1775,41 @@ export default function App() {
   const [setup, setSetup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [interviewStarted, setInterviewStarted] = useState(false);
 
-  const [jdText, setJdText] = useState("");
-  const [resumeText, setResumeText] = useState("");
+  const [jdText, setJdText] = useState(() => {
+    try { return localStorage.getItem("interview_ai_jd") || ""; } catch { return ""; }
+  });
+  const [resumeText, setResumeText] = useState(() => {
+    try { return localStorage.getItem("interview_ai_resume") || ""; } catch { return ""; }
+  });
   const [apiKey, setApiKey] = useState("");
 
-  const [roleAnalysis, setRoleAnalysis] = useState<RoleAnalysis | null>(null);
-  const [candidateAnalysis, setCandidateAnalysis] = useState<CandidateAnalysis | null>(null);
+  const [roleAnalysis, setRoleAnalysis] = useState<RoleAnalysis | null>(() => {
+    try {
+      const saved = localStorage.getItem("interview_ai_role");
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  });
+  const [candidateAnalysis, setCandidateAnalysis] = useState<CandidateAnalysis | null>(() => {
+    try {
+      const saved = localStorage.getItem("interview_ai_cand");
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  });
   const [interviewHistory, setInterviewHistory] = useState<QuestionTurn[]>([]);
   const [performanceReport, setPerformanceReport] = useState<ReportResponse | null>(null);
+
+  useEffect(() => {
+    try {
+      if (jdText) localStorage.setItem("interview_ai_jd", jdText);
+      if (resumeText) localStorage.setItem("interview_ai_resume", resumeText);
+      if (roleAnalysis) localStorage.setItem("interview_ai_role", JSON.stringify(roleAnalysis));
+      if (candidateAnalysis) localStorage.setItem("interview_ai_cand", JSON.stringify(candidateAnalysis));
+    } catch (e) {
+      console.warn("Storage sync error", e);
+    }
+  }, [jdText, resumeText, roleAnalysis, candidateAnalysis]);
 
   // Persistent localStorage for history
   const [completedSessions, setCompletedSessions] = useState<CompletedSession[]>(() => {
@@ -1865,7 +1906,15 @@ export default function App() {
         onViewReport={handleViewSessionReport}
       />
     ) : view === "analysis" ? (
-      <Analysis setView={setView} roleAnalysis={roleAnalysis} candidateAnalysis={candidateAnalysis} />
+      <Analysis
+        setView={setView}
+        onStartInterview={() => {
+          setInterviewStarted(true);
+          setView("interview");
+        }}
+        roleAnalysis={roleAnalysis}
+        candidateAnalysis={candidateAnalysis}
+      />
     ) : view === "interview" ? (
       <Interview
         setView={setView}
@@ -1877,6 +1926,8 @@ export default function App() {
         interviewHistory={interviewHistory}
         setInterviewHistory={setInterviewHistory}
         onComplete={handleCompleteInterview}
+        started={interviewStarted}
+        setStarted={setInterviewStarted}
       />
     ) : view === "report" ? (
       <Report setView={setView} report={performanceReport} />
