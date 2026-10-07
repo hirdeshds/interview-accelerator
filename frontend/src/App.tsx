@@ -71,16 +71,17 @@ function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
 
-function Button({ children, variant = "primary", icon, onClick, className = "", disabled = false }: { children: ReactNode; variant?: "primary" | "secondary" | "ghost" | "danger"; icon?: IconName; onClick?: () => void; className?: string; disabled?: boolean }) {
-  return <button className={`btn btn-${variant} ${className}`} onClick={onClick} disabled={disabled}>{icon && <Icon name={icon} />}{children}</button>;
+function Button({ children, variant = "primary", icon, onClick, className = "", disabled = false, style }: { children: ReactNode; variant?: "primary" | "secondary" | "ghost" | "danger"; icon?: IconName; onClick?: () => void; className?: string; disabled?: boolean; style?: React.CSSProperties }) {
+  return <button className={`btn btn-${variant} ${className}`} onClick={onClick} disabled={disabled} style={style}>{icon && <Icon name={icon} />}{children}</button>;
 }
 
 function Progress({ value, tone = "blue" }: { value: number; tone?: "blue" | "green" | "amber" | "red" }) {
   return <div className="progress-track"><div className={`progress-fill ${tone}`} style={{ width: `${Math.min(100, Math.max(0, value))}%` }} /></div>;
 }
 
-function Badge({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "green" | "amber" | "blue" | "red" }) {
-  return <span className={`badge badge-${tone}`}>{children}</span>;
+function Badge({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "green" | "amber" | "blue" | "red" | string }) {
+  const normalizedTone = tone === "yellow" || tone === "orange" ? "amber" : tone;
+  return <span className={`badge badge-${normalizedTone}`}>{children}</span>;
 }
 
 function ScoreRing({ value, label, small = false }: { value: number; label?: string; small?: boolean }) {
@@ -809,6 +810,8 @@ function Interview({
   interviewHistory,
   setInterviewHistory,
   onComplete,
+  started,
+  setStarted,
 }: {
   setView: (v: View) => void;
   jdText: string;
@@ -825,6 +828,7 @@ function Interview({
   const [level, setLevel] = useState(1);
   const [currentQuestionData, setCurrentQuestionData] = useState<QuestionResponse | null>(null);
   const [loadingQuestion, setLoadingQuestion] = useState(false);
+  const [speakerPlaying, setSpeakerPlaying] = useState(false);
   const [candidateAnswer, setCandidateAnswer] = useState("");
   const [evaluating, setEvaluating] = useState(false);
   const [latestEval, setLatestEval] = useState<EvalResponse | null>(null);
